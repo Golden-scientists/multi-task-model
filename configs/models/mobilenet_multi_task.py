@@ -6,7 +6,7 @@ model = dict(
     head=dict(
         type='MultiTaskHead',
         task_heads={
-            'indoor': dict(type='LinearClsHead', num_classes=26),
+            'indoor': dict(type='LinearClsHead', num_classes=67),
             'intel': dict(type='LinearClsHead', num_classes=6),
         },
         in_channels=1280,
