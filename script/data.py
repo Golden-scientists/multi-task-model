@@ -19,7 +19,7 @@ def construct_coco(name,path,path_text,path2):
     class_intel = os.listdir("../../data/indoor/indoorCVPR_09")
     fichier = open(path_text, "r")
     for f in fichier:
-        coco['data_list'].append({"img_path": os.path.join(path2, f),"gt_label": {"Indoor": class_intel.index(f.split('/')[0])}})
+        coco['data_list'].append({"img_path": os.path.join(path2, f).strip(),"gt_label": {"indoor": class_intel.index(f.split('/')[0])}})
 
     # Serializing json
     json_object = json.dumps(coco, indent=4)

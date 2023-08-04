@@ -4,17 +4,17 @@ train_pipeline = [
     dict(type='LoadImageFromFile'),
     dict(type='Resize', scale=(256, 200), backend='pillow'),
     dict(type='CenterCrop', crop_size=224),
-    dict(type='PackMultiTaskInputs'),
+    dict(type='PackMultiTaskInputs',multi_task_fields=('gt_label', )),
 ]
 test_pipeline = [
     dict(type='LoadImageFromFile'),
     dict(type='Resize', scale=(256, 200), backend='pillow'),
     dict(type='CenterCrop', crop_size=224),
-    dict(type='PackMultiTaskInputs')
+    dict(type='PackMultiTaskInputs',multi_task_fields=('gt_label', ))
 ]
 
 train_dataloader = dict(
-    batch_size=1,
+    batch_size=256,
     num_workers=1,
     dataset=dict(
         type=dataset_type,
@@ -26,7 +26,7 @@ train_dataloader = dict(
 )
 
 val_dataloader = dict(
-    batch_size=1,
+    batch_size=256,
     num_workers=1,
     dataset=dict(
         type=dataset_type,
@@ -37,7 +37,7 @@ val_dataloader = dict(
     persistent_workers=True,
 )
 test_dataloader = dict(
-    batch_size=1,
+    batch_size=128,
     num_workers=1,
     dataset=dict(
         type=dataset_type,

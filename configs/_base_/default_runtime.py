@@ -1,5 +1,5 @@
 # defaults to use registries in mmcls
-default_scope = 'mmcls'
+default_scope = 'mmpretrain'
 
 # configure default hooks
 default_hooks = dict(
@@ -36,7 +36,7 @@ env_cfg = dict(
 
 # set visualizer
 vis_backends = [dict(type='LocalVisBackend')]
-visualizer = dict(type='ClsVisualizer', vis_backends=vis_backends)
+visualizer = dict(type='UniversalVisualizer', vis_backends=vis_backends)
 
 # set log level
 log_level = 'INFO'
