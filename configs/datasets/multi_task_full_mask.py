@@ -14,7 +14,7 @@ test_pipeline = [
 ]
 
 train_dataloader = dict(
-    batch_size=256,
+    batch_size=16,
     num_workers=1,
     dataset=dict(
         type=dataset_type,
@@ -26,7 +26,7 @@ train_dataloader = dict(
 )
 
 val_dataloader = dict(
-    batch_size=256,
+    batch_size=16,
     num_workers=1,
     dataset=dict(
         type=dataset_type,
@@ -37,7 +37,7 @@ val_dataloader = dict(
     persistent_workers=True,
 )
 test_dataloader = dict(
-    batch_size=128,
+    batch_size=16,
     num_workers=1,
     dataset=dict(
         type=dataset_type,
@@ -51,8 +51,8 @@ test_dataloader = dict(
 val_evaluator = dict(
     type='MultiTasksMetric',
     task_metrics={
-        'intel': [dict(type='Accuracy', topk=(1, ))],
-        'indoor': [dict(type='Accuracy', topk=(1, ))]
+        'intel1': [dict(type='Accuracy', topk=(1, ))],
+        'intel2': [dict(type='Accuracy', topk=(1, ))]
     })
 
 test_dataloader = val_dataloader

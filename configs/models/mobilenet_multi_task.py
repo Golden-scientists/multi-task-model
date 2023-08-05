@@ -6,8 +6,8 @@ model = dict(
     head=dict(
         type='MultiTaskHead',
         task_heads={
-            'indoor': dict(type='LinearClsHead', num_classes=67),
-            'intel': dict(type='LinearClsHead', num_classes=6),
+            'intel1': dict(type='LinearClsHead', num_classes=3),
+            'intel2': dict(type='LinearClsHead', num_classes=3),
         },
         in_channels=1280,
         loss=dict(type='CrossEntropyLoss', loss_weight=1.0),
