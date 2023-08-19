@@ -1,0 +1,816 @@
+2023/08/19 17:02:25 - mmengine - INFO - 
+------------------------------------------------------------
+System environment:
+    sys.platform: win32
+    Python: 3.8.17 (default, Jul  5 2023, 20:44:21) [MSC v.1916 64 bit (AMD64)]
+    CUDA available: True
+    numpy_random_seed: 1912272669
+    GPU 0: NVIDIA GeForce RTX 2060 with Max-Q Design
+    CUDA_HOME: None
+    GCC: n/a
+    PyTorch: 1.10.1
+    PyTorch compiling details: PyTorch built with:
+  - C++ Version: 199711
+  - MSVC 192829337
+  - Intel(R) Math Kernel Library Version 2020.0.2 Product Build 20200624 for Intel(R) 64 architecture applications
+  - Intel(R) MKL-DNN v2.2.3 (Git Hash 7336ca9f055cf1bfa13efb658fe15dc9b41f0740)
+  - OpenMP 2019
+  - LAPACK is enabled (usually provided by MKL)
+  - CPU capability usage: AVX2
+  - CUDA Runtime 11.3
+  - NVCC architecture flags: -gencode;arch=compute_37,code=sm_37;-gencode;arch=compute_50,code=sm_50;-gencode;arch=compute_60,code=sm_60;-gencode;arch=compute_61,code=sm_61;-gencode;arch=compute_70,code=sm_70;-gencode;arch=compute_75,code=sm_75;-gencode;arch=compute_80,code=sm_80;-gencode;arch=compute_86,code=sm_86;-gencode;arch=compute_37,code=compute_37
+  - CuDNN 8.2
+  - Magma 2.5.4
+  - Build settings: BLAS_INFO=mkl, BUILD_TYPE=Release, CUDA_VERSION=11.3, CUDNN_VERSION=8.2.0, CXX_COMPILER=C:/cb/pytorch_1000000000000/work/tmp_bin/sccache-cl.exe, CXX_FLAGS=/DWIN32 /D_WINDOWS /GR /EHsc /w /bigobj -DUSE_PTHREADPOOL -openmp:experimental -IC:/cb/pytorch_1000000000000/work/mkl/include -DNDEBUG -DUSE_KINETO -DLIBKINETO_NOCUPTI -DUSE_FBGEMM -DUSE_XNNPACK -DSYMBOLICATE_MOBILE_DEBUG_HANDLE -DEDGE_PROFILER_USE_KINETO, LAPACK_INFO=mkl, PERF_WITH_AVX=1, PERF_WITH_AVX2=1, PERF_WITH_AVX512=1, TORCH_VERSION=1.10.1, USE_CUDA=ON, USE_CUDNN=ON, USE_EXCEPTION_PTR=1, USE_GFLAGS=OFF, USE_GLOG=OFF, USE_MKL=ON, USE_MKLDNN=ON, USE_MPI=OFF, USE_NCCL=OFF, USE_NNPACK=OFF, USE_OPENMP=ON, 
+
+    TorchVision: 0.11.2
+    OpenCV: 4.8.0
+    MMEngine: 0.8.4
+
+Runtime environment:
+    cudnn_benchmark: False
+    mp_cfg: {'mp_start_method': 'fork', 'opencv_num_threads': 0}
+    dist_cfg: {'backend': 'nccl'}
+    seed: 1912272669
+    deterministic: False
+    Distributed launcher: none
+    Distributed training: False
+    GPU number: 1
+------------------------------------------------------------
+
+2023/08/19 17:02:25 - mmengine - INFO - Config:
+auto_scale_lr = dict(base_batch_size=256)
+dataset_type = 'MultiTaskDataset'
+default_hooks = dict(
+    checkpoint=dict(interval=1, type='CheckpointHook'),
+    logger=dict(interval=100, type='LoggerHook'),
+    param_scheduler=dict(type='ParamSchedulerHook'),
+    sampler_seed=dict(type='DistSamplerSeedHook'),
+    timer=dict(type='IterTimerHook'),
+    visualization=dict(enable=False, type='VisualizationHook'))
+default_scope = 'mmpretrain'
+env_cfg = dict(
+    cudnn_benchmark=False,
+    dist_cfg=dict(backend='nccl'),
+    mp_cfg=dict(mp_start_method='fork', opencv_num_threads=0))
+launcher = 'none'
+load_from = None
+log_level = 'INFO'
+model = dict(
+    backbone=dict(type='MobileNetV2', widen_factor=1.0),
+    head=dict(
+        in_channels=1280,
+        loss=dict(loss_weight=1.0, type='CrossEntropyLoss'),
+        task_heads=dict(
+            intel1=dict(num_classes=3, type='LinearClsHead'),
+            intel2=dict(num_classes=3, type='LinearClsHead')),
+        type='MultiTaskHead'),
+    neck=dict(type='GlobalAveragePooling'),
+    type='ImageClassifier')
+optim_wrapper = dict(
+    optimizer=dict(lr=0.045, momentum=0.9, type='SGD', weight_decay=4e-05))
+param_scheduler = dict(by_epoch=True, gamma=0.98, step_size=1, type='StepLR')
+randomness = dict(deterministic=False, seed=None)
+resume = False
+test_cfg = dict()
+test_dataloader = dict(
+    batch_size=16,
+    collate_fn=dict(type='default_collate'),
+    dataset=dict(
+        ann_file='test.json',
+        data_root='../',
+        pipeline=[
+            dict(type='LoadImageFromFile'),
+            dict(backend='pillow', scale=(
+                256,
+                200,
+            ), type='Resize'),
+            dict(crop_size=224, type='CenterCrop'),
+            dict(multi_task_fields=('gt_label', ), type='PackMultiTaskInputs'),
+        ],
+        type='MultiTaskDataset'),
+    num_workers=1,
+    persistent_workers=True,
+    pin_memory=True,
+    sampler=dict(shuffle=True, type='DefaultSampler'))
+test_evaluator = dict(
+    task_metrics=dict(
+        intel1=[
+            dict(topk=(1, ), type='Accuracy'),
+        ],
+        intel2=[
+            dict(topk=(1, ), type='Accuracy'),
+        ]),
+    type='MultiTasksMetric')
+test_pipeline = [
+    dict(type='LoadImageFromFile'),
+    dict(backend='pillow', scale=(
+        256,
+        200,
+    ), type='Resize'),
+    dict(crop_size=224, type='CenterCrop'),
+    dict(multi_task_fields=('gt_label', ), type='PackMultiTaskInputs'),
+]
+train_cfg = dict(by_epoch=True, max_epochs=5, val_interval=1)
+train_dataloader = dict(
+    batch_size=16,
+    collate_fn=dict(type='default_collate'),
+    dataset=dict(
+        ann_file='train.json',
+        data_root='../',
+        pipeline=[
+            dict(type='LoadImageFromFile'),
+            dict(backend='pillow', scale=(
+                256,
+                200,
+            ), type='Resize'),
+            dict(crop_size=224, type='CenterCrop'),
+            dict(multi_task_fields=('gt_label', ), type='PackMultiTaskInputs'),
+        ],
+        type='MultiTaskDataset'),
+    num_workers=1,
+    persistent_workers=True,
+    pin_memory=True,
+    sampler=dict(shuffle=True, type='DefaultSampler'))
+train_pipeline = [
+    dict(type='LoadImageFromFile'),
+    dict(backend='pillow', scale=(
+        256,
+        200,
+    ), type='Resize'),
+    dict(crop_size=224, type='CenterCrop'),
+    dict(multi_task_fields=('gt_label', ), type='PackMultiTaskInputs'),
+]
+val_cfg = dict()
+val_dataloader = dict(
+    batch_size=16,
+    collate_fn=dict(type='default_collate'),
+    dataset=dict(
+        ann_file='test.json',
+        data_root='../',
+        pipeline=[
+            dict(type='LoadImageFromFile'),
+            dict(backend='pillow', scale=(
+                256,
+                200,
+            ), type='Resize'),
+            dict(crop_size=224, type='CenterCrop'),
+            dict(multi_task_fields=('gt_label', ), type='PackMultiTaskInputs'),
+        ],
+        type='MultiTaskDataset'),
+    num_workers=1,
+    persistent_workers=True,
+    pin_memory=True,
+    sampler=dict(shuffle=True, type='DefaultSampler'))
+val_evaluator = dict(
+    task_metrics=dict(
+        intel1=[
+            dict(topk=(1, ), type='Accuracy'),
+        ],
+        intel2=[
+            dict(topk=(1, ), type='Accuracy'),
+        ]),
+    type='MultiTasksMetric')
+vis_backends = [
+    dict(type='LocalVisBackend'),
+]
+visualizer = dict(
+    type='UniversalVisualizer', vis_backends=[
+        dict(type='LocalVisBackend'),
+    ])
+work_dir = '../tmp/multi_tasks'
+
+2023/08/19 17:02:27 - mmengine - INFO - Distributed training is not used, all SyncBatchNorm (SyncBN) layers in the model will be automatically reverted to BatchNormXd layers if they are used.
+2023/08/19 17:02:27 - mmengine - INFO - Hooks will be executed in the following order:
+before_run:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+before_train:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+before_train_epoch:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(NORMAL      ) DistSamplerSeedHook                
+ -------------------- 
+before_train_iter:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+after_train_iter:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(BELOW_NORMAL) LoggerHook                         
+(LOW         ) ParamSchedulerHook                 
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+after_train_epoch:
+(NORMAL      ) IterTimerHook                      
+(LOW         ) ParamSchedulerHook                 
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+before_val:
+(VERY_HIGH   ) RuntimeInfoHook                    
+ -------------------- 
+before_val_epoch:
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+before_val_iter:
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+after_val_iter:
+(NORMAL      ) IterTimerHook                      
+(NORMAL      ) VisualizationHook                  
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+after_val_epoch:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(BELOW_NORMAL) LoggerHook                         
+(LOW         ) ParamSchedulerHook                 
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+after_val:
+(VERY_HIGH   ) RuntimeInfoHook                    
+ -------------------- 
+after_train:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+before_test:
+(VERY_HIGH   ) RuntimeInfoHook                    
+ -------------------- 
+before_test_epoch:
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+before_test_iter:
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+after_test_iter:
+(NORMAL      ) IterTimerHook                      
+(NORMAL      ) VisualizationHook                  
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+after_test_epoch:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+after_test:
+(VERY_HIGH   ) RuntimeInfoHook                    
+ -------------------- 
+after_run:
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+2023/08/19 17:02:28 - mmengine - WARNING - The prefix is not set in metric class MultiTasksMetric.
+Name of parameter - Initialization information
+
+backbone.conv1.conv.weight - torch.Size([32, 3, 3, 3]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+backbone.conv1.bn.weight - torch.Size([32]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.conv1.bn.bias - torch.Size([32]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer1.0.conv.0.conv.weight - torch.Size([32, 1, 3, 3]): 
+KaimingInit: a=0, mode=fan_out, nonlinearity=relu, distribution =normal, bias=0 
+
+backbone.layer1.0.conv.0.bn.weight - torch.Size([32]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer1.0.conv.0.bn.bias - torch.Size([32]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer1.0.conv.1.conv.weight - torch.Size([16, 32, 1, 1]): 
+KaimingInit: a=0, mode=fan_out, nonlinearity=relu, distribution =normal, bias=0 
+
+backbone.layer1.0.conv.1.bn.weight - torch.Size([16]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer1.0.conv.1.bn.bias - torch.Size([16]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer2.0.conv.0.conv.weight - torch.Size([96, 16, 1, 1]): 
+KaimingInit: a=0, mode=fan_out, nonlinearity=relu, distribution =normal, bias=0 
+
+backbone.layer2.0.conv.0.bn.weight - torch.Size([96]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer2.0.conv.0.bn.bias - torch.Size([96]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer2.0.conv.1.conv.weight - torch.Size([96, 1, 3, 3]): 
+KaimingInit: a=0, mode=fan_out, nonlinearity=relu, distribution =normal, bias=0 
+
+backbone.layer2.0.conv.1.bn.weight - torch.Size([96]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer2.0.conv.1.bn.bias - torch.Size([96]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer2.0.conv.2.conv.weight - torch.Size([24, 96, 1, 1]): 
+KaimingInit: a=0, mode=fan_out, nonlinearity=relu, distribution =normal, bias=0 
+
+backbone.layer2.0.conv.2.bn.weight - torch.Size([24]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer2.0.conv.2.bn.bias - torch.Size([24]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer2.1.conv.0.conv.weight - torch.Size([144, 24, 1, 1]): 
+KaimingInit: a=0, mode=fan_out, nonlinearity=relu, distribution =normal, bias=0 
+
+backbone.layer2.1.conv.0.bn.weight - torch.Size([144]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer2.1.conv.0.bn.bias - torch.Size([144]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer2.1.conv.1.conv.weight - torch.Size([144, 1, 3, 3]): 
+KaimingInit: a=0, mode=fan_out, nonlinearity=relu, distribution =normal, bias=0 
+
+backbone.layer2.1.conv.1.bn.weight - torch.Size([144]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer2.1.conv.1.bn.bias - torch.Size([144]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer2.1.conv.2.conv.weight - torch.Size([24, 144, 1, 1]): 
+KaimingInit: a=0, mode=fan_out, nonlinearity=relu, distribution =normal, bias=0 
+
+backbone.layer2.1.conv.2.bn.weight - torch.Size([24]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer2.1.conv.2.bn.bias - torch.Size([24]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer3.0.conv.0.conv.weight - torch.Size([144, 24, 1, 1]): 
+KaimingInit: a=0, mode=fan_out, nonlinearity=relu, distribution =normal, bias=0 
+
+backbone.layer3.0.conv.0.bn.weight - torch.Size([144]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer3.0.conv.0.bn.bias - torch.Size([144]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer3.0.conv.1.conv.weight - torch.Size([144, 1, 3, 3]): 
+KaimingInit: a=0, mode=fan_out, nonlinearity=relu, distribution =normal, bias=0 
+
+backbone.layer3.0.conv.1.bn.weight - torch.Size([144]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer3.0.conv.1.bn.bias - torch.Size([144]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer3.0.conv.2.conv.weight - torch.Size([32, 144, 1, 1]): 
+KaimingInit: a=0, mode=fan_out, nonlinearity=relu, distribution =normal, bias=0 
+
+backbone.layer3.0.conv.2.bn.weight - torch.Size([32]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer3.0.conv.2.bn.bias - torch.Size([32]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer3.1.conv.0.conv.weight - torch.Size([192, 32, 1, 1]): 
+KaimingInit: a=0, mode=fan_out, nonlinearity=relu, distribution =normal, bias=0 
+
+backbone.layer3.1.conv.0.bn.weight - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer3.1.conv.0.bn.bias - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer3.1.conv.1.conv.weight - torch.Size([192, 1, 3, 3]): 
+KaimingInit: a=0, mode=fan_out, nonlinearity=relu, distribution =normal, bias=0 
+
+backbone.layer3.1.conv.1.bn.weight - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer3.1.conv.1.bn.bias - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer3.1.conv.2.conv.weight - torch.Size([32, 192, 1, 1]): 
+KaimingInit: a=0, mode=fan_out, nonlinearity=relu, distribution =normal, bias=0 
+
+backbone.layer3.1.conv.2.bn.weight - torch.Size([32]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer3.1.conv.2.bn.bias - torch.Size([32]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer3.2.conv.0.conv.weight - torch.Size([192, 32, 1, 1]): 
+KaimingInit: a=0, mode=fan_out, nonlinearity=relu, distribution =normal, bias=0 
+
+backbone.layer3.2.conv.0.bn.weight - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer3.2.conv.0.bn.bias - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer3.2.conv.1.conv.weight - torch.Size([192, 1, 3, 3]): 
+KaimingInit: a=0, mode=fan_out, nonlinearity=relu, distribution =normal, bias=0 
+
+backbone.layer3.2.conv.1.bn.weight - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer3.2.conv.1.bn.bias - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer3.2.conv.2.conv.weight - torch.Size([32, 192, 1, 1]): 
+KaimingInit: a=0, mode=fan_out, nonlinearity=relu, distribution =normal, bias=0 
+
+backbone.layer3.2.conv.2.bn.weight - torch.Size([32]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer3.2.conv.2.bn.bias - torch.Size([32]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer4.0.conv.0.conv.weight - torch.Size([192, 32, 1, 1]): 
+KaimingInit: a=0, mode=fan_out, nonlinearity=relu, distribution =normal, bias=0 
+
+backbone.layer4.0.conv.0.bn.weight - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer4.0.conv.0.bn.bias - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer4.0.conv.1.conv.weight - torch.Size([192, 1, 3, 3]): 
+KaimingInit: a=0, mode=fan_out, nonlinearity=relu, distribution =normal, bias=0 
+
+backbone.layer4.0.conv.1.bn.weight - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer4.0.conv.1.bn.bias - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer4.0.conv.2.conv.weight - torch.Size([64, 192, 1, 1]): 
+KaimingInit: a=0, mode=fan_out, nonlinearity=relu, distribution =normal, bias=0 
+
+backbone.layer4.0.conv.2.bn.weight - torch.Size([64]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer4.0.conv.2.bn.bias - torch.Size([64]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer4.1.conv.0.conv.weight - torch.Size([384, 64, 1, 1]): 
+KaimingInit: a=0, mode=fan_out, nonlinearity=relu, distribution =normal, bias=0 
+
+backbone.layer4.1.conv.0.bn.weight - torch.Size([384]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer4.1.conv.0.bn.bias - torch.Size([384]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer4.1.conv.1.conv.weight - torch.Size([384, 1, 3, 3]): 
+KaimingInit: a=0, mode=fan_out, nonlinearity=relu, distribution =normal, bias=0 
+
+backbone.layer4.1.conv.1.bn.weight - torch.Size([384]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer4.1.conv.1.bn.bias - torch.Size([384]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer4.1.conv.2.conv.weight - torch.Size([64, 384, 1, 1]): 
+KaimingInit: a=0, mode=fan_out, nonlinearity=relu, distribution =normal, bias=0 
+
+backbone.layer4.1.conv.2.bn.weight - torch.Size([64]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer4.1.conv.2.bn.bias - torch.Size([64]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer4.2.conv.0.conv.weight - torch.Size([384, 64, 1, 1]): 
+KaimingInit: a=0, mode=fan_out, nonlinearity=relu, distribution =normal, bias=0 
+
+backbone.layer4.2.conv.0.bn.weight - torch.Size([384]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer4.2.conv.0.bn.bias - torch.Size([384]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer4.2.conv.1.conv.weight - torch.Size([384, 1, 3, 3]): 
+KaimingInit: a=0, mode=fan_out, nonlinearity=relu, distribution =normal, bias=0 
+
+backbone.layer4.2.conv.1.bn.weight - torch.Size([384]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer4.2.conv.1.bn.bias - torch.Size([384]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer4.2.conv.2.conv.weight - torch.Size([64, 384, 1, 1]): 
+KaimingInit: a=0, mode=fan_out, nonlinearity=relu, distribution =normal, bias=0 
+
+backbone.layer4.2.conv.2.bn.weight - torch.Size([64]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer4.2.conv.2.bn.bias - torch.Size([64]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer4.3.conv.0.conv.weight - torch.Size([384, 64, 1, 1]): 
+KaimingInit: a=0, mode=fan_out, nonlinearity=relu, distribution =normal, bias=0 
+
+backbone.layer4.3.conv.0.bn.weight - torch.Size([384]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer4.3.conv.0.bn.bias - torch.Size([384]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer4.3.conv.1.conv.weight - torch.Size([384, 1, 3, 3]): 
+KaimingInit: a=0, mode=fan_out, nonlinearity=relu, distribution =normal, bias=0 
+
+backbone.layer4.3.conv.1.bn.weight - torch.Size([384]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer4.3.conv.1.bn.bias - torch.Size([384]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer4.3.conv.2.conv.weight - torch.Size([64, 384, 1, 1]): 
+KaimingInit: a=0, mode=fan_out, nonlinearity=relu, distribution =normal, bias=0 
+
+backbone.layer4.3.conv.2.bn.weight - torch.Size([64]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer4.3.conv.2.bn.bias - torch.Size([64]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer5.0.conv.0.conv.weight - torch.Size([384, 64, 1, 1]): 
+KaimingInit: a=0, mode=fan_out, nonlinearity=relu, distribution =normal, bias=0 
+
+backbone.layer5.0.conv.0.bn.weight - torch.Size([384]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer5.0.conv.0.bn.bias - torch.Size([384]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer5.0.conv.1.conv.weight - torch.Size([384, 1, 3, 3]): 
+KaimingInit: a=0, mode=fan_out, nonlinearity=relu, distribution =normal, bias=0 
+
+backbone.layer5.0.conv.1.bn.weight - torch.Size([384]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer5.0.conv.1.bn.bias - torch.Size([384]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer5.0.conv.2.conv.weight - torch.Size([96, 384, 1, 1]): 
+KaimingInit: a=0, mode=fan_out, nonlinearity=relu, distribution =normal, bias=0 
+
+backbone.layer5.0.conv.2.bn.weight - torch.Size([96]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer5.0.conv.2.bn.bias - torch.Size([96]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer5.1.conv.0.conv.weight - torch.Size([576, 96, 1, 1]): 
+KaimingInit: a=0, mode=fan_out, nonlinearity=relu, distribution =normal, bias=0 
+
+backbone.layer5.1.conv.0.bn.weight - torch.Size([576]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer5.1.conv.0.bn.bias - torch.Size([576]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer5.1.conv.1.conv.weight - torch.Size([576, 1, 3, 3]): 
+KaimingInit: a=0, mode=fan_out, nonlinearity=relu, distribution =normal, bias=0 
+
+backbone.layer5.1.conv.1.bn.weight - torch.Size([576]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer5.1.conv.1.bn.bias - torch.Size([576]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer5.1.conv.2.conv.weight - torch.Size([96, 576, 1, 1]): 
+KaimingInit: a=0, mode=fan_out, nonlinearity=relu, distribution =normal, bias=0 
+
+backbone.layer5.1.conv.2.bn.weight - torch.Size([96]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer5.1.conv.2.bn.bias - torch.Size([96]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer5.2.conv.0.conv.weight - torch.Size([576, 96, 1, 1]): 
+KaimingInit: a=0, mode=fan_out, nonlinearity=relu, distribution =normal, bias=0 
+
+backbone.layer5.2.conv.0.bn.weight - torch.Size([576]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer5.2.conv.0.bn.bias - torch.Size([576]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer5.2.conv.1.conv.weight - torch.Size([576, 1, 3, 3]): 
+KaimingInit: a=0, mode=fan_out, nonlinearity=relu, distribution =normal, bias=0 
+
+backbone.layer5.2.conv.1.bn.weight - torch.Size([576]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer5.2.conv.1.bn.bias - torch.Size([576]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer5.2.conv.2.conv.weight - torch.Size([96, 576, 1, 1]): 
+KaimingInit: a=0, mode=fan_out, nonlinearity=relu, distribution =normal, bias=0 
+
+backbone.layer5.2.conv.2.bn.weight - torch.Size([96]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer5.2.conv.2.bn.bias - torch.Size([96]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer6.0.conv.0.conv.weight - torch.Size([576, 96, 1, 1]): 
+KaimingInit: a=0, mode=fan_out, nonlinearity=relu, distribution =normal, bias=0 
+
+backbone.layer6.0.conv.0.bn.weight - torch.Size([576]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer6.0.conv.0.bn.bias - torch.Size([576]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer6.0.conv.1.conv.weight - torch.Size([576, 1, 3, 3]): 
+KaimingInit: a=0, mode=fan_out, nonlinearity=relu, distribution =normal, bias=0 
+
+backbone.layer6.0.conv.1.bn.weight - torch.Size([576]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer6.0.conv.1.bn.bias - torch.Size([576]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer6.0.conv.2.conv.weight - torch.Size([160, 576, 1, 1]): 
+KaimingInit: a=0, mode=fan_out, nonlinearity=relu, distribution =normal, bias=0 
+
+backbone.layer6.0.conv.2.bn.weight - torch.Size([160]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer6.0.conv.2.bn.bias - torch.Size([160]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer6.1.conv.0.conv.weight - torch.Size([960, 160, 1, 1]): 
+KaimingInit: a=0, mode=fan_out, nonlinearity=relu, distribution =normal, bias=0 
+
+backbone.layer6.1.conv.0.bn.weight - torch.Size([960]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer6.1.conv.0.bn.bias - torch.Size([960]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer6.1.conv.1.conv.weight - torch.Size([960, 1, 3, 3]): 
+KaimingInit: a=0, mode=fan_out, nonlinearity=relu, distribution =normal, bias=0 
+
+backbone.layer6.1.conv.1.bn.weight - torch.Size([960]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer6.1.conv.1.bn.bias - torch.Size([960]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer6.1.conv.2.conv.weight - torch.Size([160, 960, 1, 1]): 
+KaimingInit: a=0, mode=fan_out, nonlinearity=relu, distribution =normal, bias=0 
+
+backbone.layer6.1.conv.2.bn.weight - torch.Size([160]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer6.1.conv.2.bn.bias - torch.Size([160]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer6.2.conv.0.conv.weight - torch.Size([960, 160, 1, 1]): 
+KaimingInit: a=0, mode=fan_out, nonlinearity=relu, distribution =normal, bias=0 
+
+backbone.layer6.2.conv.0.bn.weight - torch.Size([960]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer6.2.conv.0.bn.bias - torch.Size([960]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer6.2.conv.1.conv.weight - torch.Size([960, 1, 3, 3]): 
+KaimingInit: a=0, mode=fan_out, nonlinearity=relu, distribution =normal, bias=0 
+
+backbone.layer6.2.conv.1.bn.weight - torch.Size([960]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer6.2.conv.1.bn.bias - torch.Size([960]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer6.2.conv.2.conv.weight - torch.Size([160, 960, 1, 1]): 
+KaimingInit: a=0, mode=fan_out, nonlinearity=relu, distribution =normal, bias=0 
+
+backbone.layer6.2.conv.2.bn.weight - torch.Size([160]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer6.2.conv.2.bn.bias - torch.Size([160]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer7.0.conv.0.conv.weight - torch.Size([960, 160, 1, 1]): 
+KaimingInit: a=0, mode=fan_out, nonlinearity=relu, distribution =normal, bias=0 
+
+backbone.layer7.0.conv.0.bn.weight - torch.Size([960]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer7.0.conv.0.bn.bias - torch.Size([960]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer7.0.conv.1.conv.weight - torch.Size([960, 1, 3, 3]): 
+KaimingInit: a=0, mode=fan_out, nonlinearity=relu, distribution =normal, bias=0 
+
+backbone.layer7.0.conv.1.bn.weight - torch.Size([960]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer7.0.conv.1.bn.bias - torch.Size([960]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer7.0.conv.2.conv.weight - torch.Size([320, 960, 1, 1]): 
+KaimingInit: a=0, mode=fan_out, nonlinearity=relu, distribution =normal, bias=0 
+
+backbone.layer7.0.conv.2.bn.weight - torch.Size([320]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer7.0.conv.2.bn.bias - torch.Size([320]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.conv2.conv.weight - torch.Size([1280, 320, 1, 1]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+backbone.conv2.bn.weight - torch.Size([1280]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.conv2.bn.bias - torch.Size([1280]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+head.task_heads.intel1.fc.weight - torch.Size([3, 1280]): 
+NormalInit: mean=0, std=0.01, bias=0 
+
+head.task_heads.intel1.fc.bias - torch.Size([3]): 
+NormalInit: mean=0, std=0.01, bias=0 
+
+head.task_heads.intel2.fc.weight - torch.Size([3, 1280]): 
+NormalInit: mean=0, std=0.01, bias=0 
+
+head.task_heads.intel2.fc.bias - torch.Size([3]): 
+NormalInit: mean=0, std=0.01, bias=0 
+2023/08/19 17:02:32 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+2023/08/19 17:02:32 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+2023/08/19 17:02:32 - mmengine - INFO - Checkpoints will be saved to C:\Users\FR00CSS0000000040678\Desktop\project\openmmlab\tmp\multi_tasks.
+2023/08/19 17:03:03 - mmengine - INFO - Epoch(train) [1][100/878]  lr: 4.5000e-02  eta: 0:22:25  time: 0.1583  data_time: 0.0016  memory: 1127  loss: 1.7768  intel1_loss: 0.9470  intel1_mask_size: 11.0000  intel2_loss: 0.8298  intel2_mask_size: 5.0000
+2023/08/19 17:03:19 - mmengine - INFO - Epoch(train) [1][200/878]  lr: 4.5000e-02  eta: 0:16:29  time: 0.1606  data_time: 0.0031  memory: 1127  loss: 1.5994  intel1_loss: 0.8585  intel1_mask_size: 12.0000  intel2_loss: 0.7410  intel2_mask_size: 4.0000
+2023/08/19 17:03:35 - mmengine - INFO - Epoch(train) [1][300/878]  lr: 4.5000e-02  eta: 0:14:22  time: 0.1634  data_time: 0.0010  memory: 1127  loss: 1.4835  intel1_loss: 0.7845  intel1_mask_size: 8.0000  intel2_loss: 0.6990  intel2_mask_size: 8.0000
+2023/08/19 17:03:52 - mmengine - INFO - Epoch(train) [1][400/878]  lr: 4.5000e-02  eta: 0:13:17  time: 0.1668  data_time: 0.0017  memory: 1127  loss: 1.6095  intel1_loss: 0.9336  intel1_mask_size: 4.0000  intel2_loss: 0.6759  intel2_mask_size: 12.0000
+2023/08/19 17:04:08 - mmengine - INFO - Epoch(train) [1][500/878]  lr: 4.5000e-02  eta: 0:12:30  time: 0.1633  data_time: 0.0016  memory: 1127  loss: 1.3878  intel1_loss: 0.6990  intel1_mask_size: 11.0000  intel2_loss: 0.6888  intel2_mask_size: 5.0000
+2023/08/19 17:04:25 - mmengine - INFO - Epoch(train) [1][600/878]  lr: 4.5000e-02  eta: 0:11:51  time: 0.1602  data_time: 0.0006  memory: 1127  loss: 1.2109  intel1_loss: 0.6783  intel1_mask_size: 9.0000  intel2_loss: 0.5325  intel2_mask_size: 7.0000
+2023/08/19 17:04:40 - mmengine - INFO - Epoch(train) [1][700/878]  lr: 4.5000e-02  eta: 0:11:16  time: 0.1533  data_time: 0.0000  memory: 1127  loss: 1.2806  intel1_loss: 0.7667  intel1_mask_size: 8.0000  intel2_loss: 0.5140  intel2_mask_size: 8.0000
+2023/08/19 17:05:10 - mmengine - INFO - Epoch(train) [1][800/878]  lr: 4.5000e-02  eta: 0:11:51  time: 0.3333  data_time: 0.0031  memory: 1127  loss: 1.1497  intel1_loss: 0.5013  intel1_mask_size: 7.0000  intel2_loss: 0.6484  intel2_mask_size: 9.0000
+2023/08/19 17:05:36 - mmengine - INFO - Exp name: multi_task_20230819_170223
+2023/08/19 17:05:36 - mmengine - INFO - Saving checkpoint at 1 epochs
+2023/08/19 17:05:54 - mmengine - INFO - Epoch(val) [1][100/188]    eta: 0:00:15  time: 0.0950  data_time: 0.0005  memory: 1127  
+2023/08/19 17:06:03 - mmengine - INFO - Epoch(val) [1][188/188]    intel1_accuracy/top1: 66.9856  intel2_accuracy/top1: 71.9584  data_time: 0.0420  time: 0.1379
+2023/08/19 17:06:36 - mmengine - INFO - Epoch(train) [2][100/878]  lr: 4.4100e-02  eta: 0:12:38  time: 0.3340  data_time: 0.0010  memory: 1127  loss: 1.2720  intel1_loss: 0.7314  intel1_mask_size: 11.0000  intel2_loss: 0.5406  intel2_mask_size: 5.0000
+2023/08/19 17:06:43 - mmengine - INFO - Exp name: multi_task_20230819_170223
+2023/08/19 17:07:09 - mmengine - INFO - Epoch(train) [2][200/878]  lr: 4.4100e-02  eta: 0:12:48  time: 0.3271  data_time: 0.0021  memory: 1127  loss: 1.1208  intel1_loss: 0.5058  intel1_mask_size: 8.0000  intel2_loss: 0.6150  intel2_mask_size: 8.0000
+2023/08/19 17:07:42 - mmengine - INFO - Epoch(train) [2][300/878]  lr: 4.4100e-02  eta: 0:12:51  time: 0.3250  data_time: 0.0005  memory: 1127  loss: 1.2162  intel1_loss: 0.7094  intel1_mask_size: 11.0000  intel2_loss: 0.5068  intel2_mask_size: 5.0000
+2023/08/19 17:08:14 - mmengine - INFO - Epoch(train) [2][400/878]  lr: 4.4100e-02  eta: 0:12:48  time: 0.3276  data_time: 0.0011  memory: 1127  loss: 1.0835  intel1_loss: 0.5085  intel1_mask_size: 11.0000  intel2_loss: 0.5750  intel2_mask_size: 5.0000
+2023/08/19 17:08:47 - mmengine - INFO - Epoch(train) [2][500/878]  lr: 4.4100e-02  eta: 0:12:41  time: 0.3273  data_time: 0.0003  memory: 1127  loss: 0.9983  intel1_loss: 0.5573  intel1_mask_size: 10.0000  intel2_loss: 0.4409  intel2_mask_size: 6.0000
+2023/08/19 17:09:20 - mmengine - INFO - Epoch(train) [2][600/878]  lr: 4.4100e-02  eta: 0:12:30  time: 0.3266  data_time: 0.0015  memory: 1127  loss: 0.9696  intel1_loss: 0.5137  intel1_mask_size: 5.0000  intel2_loss: 0.4558  intel2_mask_size: 11.0000
+2023/08/19 17:09:53 - mmengine - INFO - Epoch(train) [2][700/878]  lr: 4.4100e-02  eta: 0:12:17  time: 0.3266  data_time: 0.0009  memory: 1127  loss: 1.0490  intel1_loss: 0.5255  intel1_mask_size: 10.0000  intel2_loss: 0.5235  intel2_mask_size: 6.0000
+2023/08/19 17:10:25 - mmengine - INFO - Epoch(train) [2][800/878]  lr: 4.4100e-02  eta: 0:12:01  time: 0.3280  data_time: 0.0010  memory: 1127  loss: 0.9954  intel1_loss: 0.5426  intel1_mask_size: 11.0000  intel2_loss: 0.4527  intel2_mask_size: 5.0000
+2023/08/19 17:10:50 - mmengine - INFO - Exp name: multi_task_20230819_170223
+2023/08/19 17:10:50 - mmengine - INFO - Saving checkpoint at 2 epochs
+2023/08/19 17:11:00 - mmengine - INFO - Epoch(val) [2][100/188]    eta: 0:00:08  time: 0.0906  data_time: 0.0031  memory: 1127  
+2023/08/19 17:11:09 - mmengine - INFO - Epoch(val) [2][188/188]    intel1_accuracy/top1: 79.9727  intel2_accuracy/top1: 80.7417  data_time: 0.0011  time: 0.0930
+2023/08/19 17:11:41 - mmengine - INFO - Epoch(train) [3][100/878]  lr: 4.3218e-02  eta: 0:11:28  time: 0.3340  data_time: 0.0000  memory: 1127  loss: 0.9801  intel1_loss: 0.5820  intel1_mask_size: 8.0000  intel2_loss: 0.3981  intel2_mask_size: 8.0000
+2023/08/19 17:12:14 - mmengine - INFO - Epoch(train) [3][200/878]  lr: 4.3218e-02  eta: 0:11:08  time: 0.3275  data_time: 0.0016  memory: 1127  loss: 1.1480  intel1_loss: 0.6021  intel1_mask_size: 6.0000  intel2_loss: 0.5459  intel2_mask_size: 10.0000
+2023/08/19 17:12:29 - mmengine - INFO - Exp name: multi_task_20230819_170223
+2023/08/19 17:12:47 - mmengine - INFO - Epoch(train) [3][300/878]  lr: 4.3218e-02  eta: 0:10:46  time: 0.3279  data_time: 0.0017  memory: 1127  loss: 0.8844  intel1_loss: 0.4039  intel1_mask_size: 8.0000  intel2_loss: 0.4805  intel2_mask_size: 8.0000
+2023/08/19 17:13:20 - mmengine - INFO - Epoch(train) [3][400/878]  lr: 4.3218e-02  eta: 0:10:24  time: 0.3259  data_time: 0.0020  memory: 1127  loss: 1.2269  intel1_loss: 0.6984  intel1_mask_size: 8.0000  intel2_loss: 0.5285  intel2_mask_size: 8.0000
+2023/08/19 17:13:52 - mmengine - INFO - Epoch(train) [3][500/878]  lr: 4.3218e-02  eta: 0:10:00  time: 0.3246  data_time: 0.0010  memory: 1127  loss: 0.8557  intel1_loss: 0.3338  intel1_mask_size: 7.0000  intel2_loss: 0.5219  intel2_mask_size: 9.0000
+2023/08/19 17:14:25 - mmengine - INFO - Epoch(train) [3][600/878]  lr: 4.3218e-02  eta: 0:09:36  time: 0.3256  data_time: 0.0007  memory: 1127  loss: 0.8638  intel1_loss: 0.4652  intel1_mask_size: 10.0000  intel2_loss: 0.3986  intel2_mask_size: 6.0000
+2023/08/19 17:14:57 - mmengine - INFO - Epoch(train) [3][700/878]  lr: 4.3218e-02  eta: 0:09:11  time: 0.3240  data_time: 0.0012  memory: 1127  loss: 0.8662  intel1_loss: 0.4728  intel1_mask_size: 6.0000  intel2_loss: 0.3934  intel2_mask_size: 10.0000
+2023/08/19 17:15:30 - mmengine - INFO - Epoch(train) [3][800/878]  lr: 4.3218e-02  eta: 0:08:45  time: 0.3234  data_time: 0.0012  memory: 1127  loss: 0.8959  intel1_loss: 0.3928  intel1_mask_size: 7.0000  intel2_loss: 0.5031  intel2_mask_size: 9.0000
+2023/08/19 17:15:55 - mmengine - INFO - Exp name: multi_task_20230819_170223
+2023/08/19 17:15:55 - mmengine - INFO - Saving checkpoint at 3 epochs
+2023/08/19 17:16:05 - mmengine - INFO - Epoch(val) [3][100/188]    eta: 0:00:08  time: 0.0921  data_time: 0.0006  memory: 1127  
+2023/08/19 17:16:13 - mmengine - INFO - Epoch(val) [3][188/188]    intel1_accuracy/top1: 83.5270  intel2_accuracy/top1: 83.4092  data_time: 0.0010  time: 0.0915
+2023/08/19 17:16:45 - mmengine - INFO - Epoch(train) [4][100/878]  lr: 4.2354e-02  eta: 0:07:58  time: 0.3249  data_time: 0.0016  memory: 1127  loss: 0.7530  intel1_loss: 0.4961  intel1_mask_size: 12.0000  intel2_loss: 0.2569  intel2_mask_size: 4.0000
+2023/08/19 17:17:18 - mmengine - INFO - Epoch(train) [4][200/878]  lr: 4.2354e-02  eta: 0:07:31  time: 0.3237  data_time: 0.0016  memory: 1127  loss: 0.9298  intel1_loss: 0.6110  intel1_mask_size: 6.0000  intel2_loss: 0.3188  intel2_mask_size: 10.0000
+2023/08/19 17:17:50 - mmengine - INFO - Epoch(train) [4][300/878]  lr: 4.2354e-02  eta: 0:07:04  time: 0.3238  data_time: 0.0017  memory: 1127  loss: 0.8114  intel1_loss: 0.3334  intel1_mask_size: 11.0000  intel2_loss: 0.4780  intel2_mask_size: 5.0000
+2023/08/19 17:18:12 - mmengine - INFO - Exp name: multi_task_20230819_170223
+2023/08/19 17:18:23 - mmengine - INFO - Epoch(train) [4][400/878]  lr: 4.2354e-02  eta: 0:06:36  time: 0.3234  data_time: 0.0006  memory: 1127  loss: 0.9275  intel1_loss: 0.5221  intel1_mask_size: 10.0000  intel2_loss: 0.4054  intel2_mask_size: 6.0000
+2023/08/19 17:18:55 - mmengine - INFO - Epoch(train) [4][500/878]  lr: 4.2354e-02  eta: 0:06:08  time: 0.3237  data_time: 0.0010  memory: 1127  loss: 0.6261  intel1_loss: 0.3949  intel1_mask_size: 10.0000  intel2_loss: 0.2312  intel2_mask_size: 6.0000
+2023/08/19 17:19:28 - mmengine - INFO - Epoch(train) [4][600/878]  lr: 4.2354e-02  eta: 0:05:40  time: 0.3239  data_time: 0.0013  memory: 1127  loss: 1.0041  intel1_loss: 0.4793  intel1_mask_size: 12.0000  intel2_loss: 0.5247  intel2_mask_size: 4.0000
+2023/08/19 17:20:00 - mmengine - INFO - Epoch(train) [4][700/878]  lr: 4.2354e-02  eta: 0:05:12  time: 0.3243  data_time: 0.0020  memory: 1127  loss: 0.7348  intel1_loss: 0.3996  intel1_mask_size: 13.0000  intel2_loss: 0.3352  intel2_mask_size: 3.0000
+2023/08/19 17:20:33 - mmengine - INFO - Epoch(train) [4][800/878]  lr: 4.2354e-02  eta: 0:04:43  time: 0.3246  data_time: 0.0009  memory: 1127  loss: 0.8351  intel1_loss: 0.3392  intel1_mask_size: 10.0000  intel2_loss: 0.4959  intel2_mask_size: 6.0000
+2023/08/19 17:20:58 - mmengine - INFO - Exp name: multi_task_20230819_170223
+2023/08/19 17:20:58 - mmengine - INFO - Saving checkpoint at 4 epochs
+2023/08/19 17:21:08 - mmengine - INFO - Epoch(val) [4][100/188]    eta: 0:00:08  time: 0.0909  data_time: 0.0007  memory: 1127  
+2023/08/19 17:21:16 - mmengine - INFO - Epoch(val) [4][188/188]    intel1_accuracy/top1: 85.2358  intel2_accuracy/top1: 88.6142  data_time: 0.0010  time: 0.0908
+2023/08/19 17:21:48 - mmengine - INFO - Epoch(train) [5][100/878]  lr: 4.1507e-02  eta: 0:03:51  time: 0.3250  data_time: 0.0012  memory: 1127  loss: 0.7226  intel1_loss: 0.4973  intel1_mask_size: 6.0000  intel2_loss: 0.2253  intel2_mask_size: 10.0000
+2023/08/19 17:22:21 - mmengine - INFO - Epoch(train) [5][200/878]  lr: 4.1507e-02  eta: 0:03:22  time: 0.3258  data_time: 0.0013  memory: 1127  loss: 0.6298  intel1_loss: 0.4191  intel1_mask_size: 7.0000  intel2_loss: 0.2108  intel2_mask_size: 9.0000
+2023/08/19 17:22:53 - mmengine - INFO - Epoch(train) [5][300/878]  lr: 4.1507e-02  eta: 0:02:52  time: 0.3248  data_time: 0.0006  memory: 1127  loss: 0.8145  intel1_loss: 0.4186  intel1_mask_size: 6.0000  intel2_loss: 0.3960  intel2_mask_size: 10.0000
+2023/08/19 17:23:26 - mmengine - INFO - Epoch(train) [5][400/878]  lr: 4.1507e-02  eta: 0:02:23  time: 0.3239  data_time: 0.0010  memory: 1127  loss: 0.8087  intel1_loss: 0.5078  intel1_mask_size: 9.0000  intel2_loss: 0.3009  intel2_mask_size: 7.0000
+2023/08/19 17:23:55 - mmengine - INFO - Exp name: multi_task_20230819_170223
+2023/08/19 17:23:58 - mmengine - INFO - Epoch(train) [5][500/878]  lr: 4.1507e-02  eta: 0:01:53  time: 0.3251  data_time: 0.0009  memory: 1127  loss: 0.9960  intel1_loss: 0.6685  intel1_mask_size: 8.0000  intel2_loss: 0.3275  intel2_mask_size: 8.0000
+2023/08/19 17:24:31 - mmengine - INFO - Epoch(train) [5][600/878]  lr: 4.1507e-02  eta: 0:01:23  time: 0.3223  data_time: 0.0007  memory: 1127  loss: 0.4573  intel1_loss: 0.1855  intel1_mask_size: 7.0000  intel2_loss: 0.2719  intel2_mask_size: 9.0000
+2023/08/19 17:25:04 - mmengine - INFO - Epoch(train) [5][700/878]  lr: 4.1507e-02  eta: 0:00:53  time: 0.3242  data_time: 0.0010  memory: 1127  loss: 0.6865  intel1_loss: 0.3596  intel1_mask_size: 8.0000  intel2_loss: 0.3268  intel2_mask_size: 8.0000
+2023/08/19 17:25:36 - mmengine - INFO - Epoch(train) [5][800/878]  lr: 4.1507e-02  eta: 0:00:23  time: 0.3232  data_time: 0.0014  memory: 1127  loss: 0.3555  intel1_loss: 0.1857  intel1_mask_size: 8.0000  intel2_loss: 0.1697  intel2_mask_size: 8.0000
+2023/08/19 17:26:01 - mmengine - INFO - Exp name: multi_task_20230819_170223
+2023/08/19 17:26:01 - mmengine - INFO - Saving checkpoint at 5 epochs
+2023/08/19 17:26:11 - mmengine - INFO - Epoch(val) [5][100/188]    eta: 0:00:08  time: 0.0919  data_time: 0.0006  memory: 1127  
+2023/08/19 17:26:19 - mmengine - INFO - Epoch(val) [5][188/188]    intel1_accuracy/top1: 86.0560  intel2_accuracy/top1: 87.7033  data_time: 0.0012  time: 0.0915
