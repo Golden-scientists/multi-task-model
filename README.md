@@ -24,8 +24,9 @@ python3 tools/train.py path_to_config --work-dir path_save_logs
 
 ```
 
-to compare loss of the three models 
+to compare the loss of the three models
 
 ```py
 python tools/analyze_logs.py plot_curve ".\tmp\first_ask\20230819_152546\vis_data\20230819_152546.json" "\tmp\second_ask\20230819_154300\vis_data\20230819_154300.json" ".\tmp\multi_tasks\20230819_170223\vis_data\20230819_170223.json" --keys loss --legend task1 task2 multi-task
 ```
+
