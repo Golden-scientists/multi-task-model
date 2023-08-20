@@ -1,5 +1,13 @@
-# multi-task
+# Introduction :
 Testing the limits of a multi-task model with [Intel Image Classification ]([https://www.kaggle.com/datasets/puneet6060intel-image-classification](https://www.kaggle.com/datasets/puneet6060/intel-image-classification)) datasets ,we split this  dataset into two subsets (intel1 and intel 2), the first contains classes ('buildings', 'mountain', 'street') and the second contains ('forest', 'glacier', 'sea'), the idea is to build a single model for each task and compare it to the multitasking model with both tasks:
+
+# Installation : 
+Below are quick steps for installation:
+```py
+conda env create -f env.yaml
+conda activate multi-tasking
+mim install mmcv
+```
 
 ---------------------------------------------------------------------------------------------------------
 ## what you need to know : 
@@ -15,6 +23,3 @@ to train a model use the below command
 python3 tools/train.py path_to_config --work-dir path_save_logs
 
 ```
-
-
-https://repositorio.unal.edu.co/bitstream/handle/unal/76551/PhD_Thesis.pdf;jsessionid=A592CDE70A6F9D297186DBDDF079D00C?sequence=1
