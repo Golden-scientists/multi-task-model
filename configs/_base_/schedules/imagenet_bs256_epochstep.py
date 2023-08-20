@@ -6,7 +6,7 @@ optim_wrapper = dict(
 param_scheduler = dict(type='StepLR', by_epoch=True, step_size=1, gamma=0.98)
 
 # train, val, test setting
-train_cfg = dict(by_epoch=True, max_epochs=300, val_interval=1)
+train_cfg = dict(by_epoch=True, max_epochs=5, val_interval=1)
 val_cfg = dict()
 test_cfg = dict()
 
