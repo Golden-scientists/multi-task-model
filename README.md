@@ -17,4 +17,3 @@ python3 tools/train.py path_to_config --work-dir path_save_logs
 ```
 
 
-https://repositorio.unal.edu.co/bitstream/handle/unal/76551/PhD_Thesis.pdf;jsessionid=A592CDE70A6F9D297186DBDDF079D00C?sequence=1
