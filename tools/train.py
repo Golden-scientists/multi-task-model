@@ -140,20 +140,15 @@ def merge_args(cfg, args):
 
 def main():
     args = parse_args()
-
     # register all modules in mmcls into the registries
     # do not init the default scope here because it will be init in the runner
     register_all_modules(init_default_scope=False)
-
     # load config
     cfg = Config.fromfile(args.config)
-
     # merge cli arguments to config
     cfg = merge_args(cfg, args)
-
     # build the runner from config
     runner = Runner.from_cfg(cfg)
-
     # start training
     runner.train()
 

@@ -41,10 +41,8 @@ def construct_coco(name:str,path_data:str):
             image_path=os.path.join(path_class,image)
             coco['data_list'].append({"img_path": image_path,"gt_label": {"intel2": class_intel2.index(file)}})
 
-    # Serializing json
     json_object = json.dumps(coco, indent=4)
         
-    # Writing to sample.json
     with open(name, "w") as outfile:
         outfile.write(json_object)
 construct_coco("../train.json","../data/intel/seg_train")
