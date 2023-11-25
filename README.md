@@ -1,5 +1,5 @@
 # multi-task
-Testing the limits of a multi-task model with [Intel Image Classification ]([https://www.kaggle.com/datasets/puneet6060intel-image-classification](https://www.kaggle.com/datasets/puneet6060/intel-image-classification)) datasets ,we split this  dataset into two subsets (intel1 and intel 2), the first contains classes ('buildings', 'mountain', 'street') and the second contains ('forest', 'glacier', 'sea'), the idea is to build a single model for each task and compare it to the multitasking model with both tasks:
+Testing the limits of a multi-task model with [Intel Image Classification ]([https://www.kaggle.com/datasets/puneet6060intel-image-classification](https://www.kaggle.com/datasets/puneet6060/intel-image-classification)) datasets, we split this  dataset into two subsets (intel1 and intel 2), the first contains classes ('buildings', 'mountain', 'street') and the second contains ('forest', 'glacier', 'sea'), the idea is to build a single model for each task and compare it to the multitasking model with both tasks:
 
 ---------------------------------------------------------------------------------------------------------
 ## what you need to know : 
