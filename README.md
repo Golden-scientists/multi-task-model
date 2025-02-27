@@ -7,7 +7,6 @@ Testing the limits of a multi-task model with [Intel Image Classification ]([htt
     - configs/second_task.py : is the config for task 2 : intel 2
     - configs/multi_task.py : is the config for multi tasking both task
     - annotations for multi_tasking : download data and use script/construct_coco_multi_tasking.py
-
 ----------------------------------------------------------------------------------------------------------
 
 to train a model use the below command
